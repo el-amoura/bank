@@ -19,8 +19,11 @@ You will find two available controllers:
 
 - Click on `user-controller` button
 - Now you will see the available API methods
+
 -- `/create` : create a new user in the database
+
 -- `/id`: retrieve a user from the database with the user id
+
 -- `/identification`: retrieve a user from the database with the user identification (personal identification number)
 
 # Calling the available methods with Swagger

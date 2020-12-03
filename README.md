@@ -6,12 +6,12 @@ It exposes a simple API where you can add users and create savings accounts for 
 The data is stored on a remote MySQL database.
 
 
-You can test the API [here](http://ec2-18-156-33-147.eu-central-1.compute.amazonaws.com:8090/api/swagger-ui.html#/data-warehouse-controller#/).
-In this link you will find a Swagger interface for easy testing, but if you want to call the API you can do so with this [link](http://ec2-18-156-33-147.eu-central-1.compute.amazonaws.com/).
+You can test the API [here](http://ec2-3-124-115-1.eu-central-1.compute.amazonaws.com:8090/api/swagger-ui.html#/).
+In this link you will find a Swagger interface for easy testing, but if you want to call the API you can do so with this [link](http://ec2-3-124-115-1.eu-central-1.compute.amazonaws.com:8090).
 
 # Accessing Swagger interface
 
-- Go to the swagger link [here](http://ec2-18-156-33-147.eu-central-1.compute.amazonaws.com:8090/api/swagger-ui.html#/).
+- Go to the swagger link [here](http://ec2-3-124-115-1.eu-central-1.compute.amazonaws.com:8090/api/swagger-ui.html#/).
 You will find two available controllers:
     - user-controller
     - savings-account-controller

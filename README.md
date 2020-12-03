@@ -1,11 +1,10 @@
 
-# Simple Data Warehouse Application
+# Savings Account Demo Application
 
-This is a simple Java with Spring Boot application that generates reports on existing data.
-It exposes a simple API where you can run a query on the existing test values and expect a result.
-The test data is stored on a remote MySQL database.
+This is a simple Java + Spring Boot application that simulates a savings account.
+It exposes a simple API where you can add users and create savings accounts for them.
+The data is stored on a remote MySQL database.
 
-The test values were extracted from [here](http://adverity-challenge.s3-website-eu-west-1.amazonaws.com/PIxSyyrIKFORrCXfMYqZBI.csv) and inserted into MySQL.
 
 You can test the API [here](http://ec2-18-156-33-147.eu-central-1.compute.amazonaws.com:8090/api/swagger-ui.html#/data-warehouse-controller#/).
 In this link you will find a Swagger interface for easy testing, but if you want to call the API you can do so with this [link](http://ec2-18-156-33-147.eu-central-1.compute.amazonaws.com/).
@@ -13,11 +12,16 @@ In this link you will find a Swagger interface for easy testing, but if you want
 # Accessing Swagger interface
 
 - Go to the swagger link [here](http://ec2-18-156-33-147.eu-central-1.compute.amazonaws.com:8090/api/swagger-ui.html#/).
-- Click on `data-warehouse-controller` button
+You will find two available controllers:
+    - user-controller
+    - savings-account-controller
+
+
+- Click on `user-controller` button
 - Now you will see the available API methods
--- `/addOne` : used to add one entry in the database
--- `/get`: used to retrieve a list of entries for a given data source and campaign
--- `/queryData`: used for running different types of queries on the available test data.
+-- `/create` : create a new user in the database
+-- `/id`: retrieve a user from the database with the user id
+-- `/identification`: retrieve a user from the database with the user identification (personal identification number)
 
 # Calling the available methods with Swagger
 - In the Swagger interface click on the method you want to test
@@ -25,96 +29,93 @@ In this link you will find a Swagger interface for easy testing, but if you want
 - Enter the required parameters and hit the `execute` button on the bottom
 - The result is displayed bellow
 
-# Calling the `queryData` method
+# Calling the `user/create` method
 
 To make a test call with Swagger, post the request JSON in the `body` field.
 The request should look like this:
 
 `{`
-  `"campaign": "Adventmarkt Touristik",`
-  `"dataSource": "Google Ads",`
-  `"endDate": "12/24/19",`
-  `"metricType": "CLICKS",`
-  `"queryPerDay": false,`
-  `"startDate": "11/12/19"`
+  `"email": "test@test.ro",`
+  `"firstName": "testF",`
+  `"identificationNumber": "1234567890",`
+  `"lastName": "testL",`
+  `"middleName": "testM"`
 `}`
 
 If the request is successful you will get a JSON response like this:
 
 `{`
-  `"metricType": "CLICKS",`
-  `"queryPerDay": false,`
-  `"dataSource": "Google Ads",`
-  `"campaign": "Adventmarkt Touristik",`
-  `"startDate": [`
-  `  2019,`
-  `  11,`
-  `  12`
-  `],`
-  `"endDate": [`
-  `  2019,`
-  `  12,`
-  `  24`
-  `],`
-  `"totalResult": "4793",`
-  `"perDayResult": null`
+  `"id": 23342,`
+  `"identificationNumber": "1234567890",`
+  `"firstName": "testF",`
+  `"lastName": "testL",`
+  `"middleName": "testM",`
+  `"email": "test@test.ro"`
 `}`
 
-The response contains details about the request and a `"totalResult": "4793",` that represents the data we searched for.
-Note that we also have a `"perDayResult": null`. These two types of responses are populated depending on the `"queryPerDay"` field in the request. Because we requested `"queryPerDay": false` we got a result that represented the total amount for the given period.
+If there are any validation errors you should see a message in the response body.
 
-Test example where `"queryPerDay"` is true:
-Request:
+The successful response contains the user details entered in the request and the generated user id. We will use this id to call the rest of the api methods.
+
+
+# Calling the `savings-account-controller`:
+- # savings/create
+This method will create a savings account for a given user if all validations pass.
+Example request: creating a a savings account for the given userId with 0 balance and interest rate.
 `{`
-  `"campaign": "Adventmarkt Touristik",`
-  `"dataSource": "Google Ads",`
-  `"endDate": "11/13/19",`
-  `"metricType": "CLICKS",`
-  `"queryPerDay": true,`
-  `"startDate": "11/12/19"`
+  `"balance": 0,`
+  `"interestRate": 0,`
+  `"userId": 23342`
 `}`
 
 Response:
-
 `{`
-`  "metricType": "CLICKS",`
-`  "queryPerDay": true,`
-`  "dataSource": "Google Ads",`
-`  "campaign": "Adventmarkt Touristik",`
-`  "startDate": [`
-`    2019,`
-`    11,`
-`    12`
-`  ],`
-`  "endDate": [`
-`    2019,`
-`    11,`
-`    13`
-`  ],`
-`  "totalResult": null,`
-`  "perDayResult": {`
-`    "2019-11-12": "7",`
-`    "2019-11-13": "16"`
-`  }`
+  `"id": 23343,`
+  `"userId": 23342,`
+  `"balance": 0,`
+  `"interestRate": 0`
 `}`
 
-Now the response contains `"perDayResult": {
-    "2019-11-12": "7",
-    "2019-11-13": "16"
-  }` because we requested the total amount of CLICKS for the given data source and campaign, in the specified time range.
-  
-The only mandatory field is `metricType` so the request can look like this:
+We can now make a call to the deposit method `savings/deposit`
+Example request:
 `{`
-  `"metricType": "CLICKS"`
+  `"amount": 50,`
+  `"userId": 23342`
 `}`
-and you would receive the total amount of CLICKS in the database for all data sources and campaigns.
+Response:
+`{`
+  `"id": 23343,`
+  `"userId": 23342,`
+  `"balance": 50,`
+  `"interestRate": 0`
+`}`
 
-# Available metric types
-There a three possible metric types:
-    -- `CLICKS`
-    -- `IMPRESSIONS`
-    -- `CTR`
-    
+We can retrieve data about the saving account using the method `savings/id/` with the savings id as input or call the method `savings/userId` that takes the userId as input.
 
-   
+- # calling the `savings/withdraw` method:
+Example request:
+`{`
+  `"amount": 20,`
+  `"userId": 23342`
+`}`
+Response:
+`{`
+  `"id": 23343,`
+  `"userId": 23342,`
+  `"balance": 30,`
+  `"interestRate": 0`
+`}`
+We have made a successful withdrawal from the user savings account and the response gives us the remaining balance the account has.
 
+There are a few other methods in the controllers that you can test with.
+
+
+
+# API limitations:
+This is a demo application so there are some things that can be improved:
+    -- the user data should contain more identification fields like address or phone
+    -- there should be a history with all transactions made by a user
+    -- validations are minimal and could result in some errors with out of scope data
+    -- there are no unit tests implemented
+    -- an authentication system should be implemented for more security
+    -- method calls should use a token instead of a user id

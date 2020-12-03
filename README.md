@@ -148,3 +148,5 @@ This is a demo application so there are some things that can be improved:
     
     -- method calls should use a token instead of a user id
     
+    -- the code provided here does not contain the MySQL url. If you want to run this application locally you have to create a MySQL database.
+    
